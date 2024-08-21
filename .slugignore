@@ -1,0 +1,12 @@
+*.log
+.env
+__pycache__/
+*.pyc
+.git/
+venv/
+*.psd
+*.pdf
+/test
+/spec
+log
+tmp

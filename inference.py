@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import torch
 import torchvision.models as models
-from torchvision.transforms.functional import to_pil_image
 from torchvision import transforms
 from PIL import Image
 import io
@@ -38,17 +37,9 @@ class ImageRequest(BaseModel):
 
 
 def base64_to_pil_image(base64_str: str) -> Image.Image:
-    """Convert a base64 string to a PIL Image."""
     image_data = base64.b64decode(base64_str)
     image = Image.open(io.BytesIO(image_data))
     return image
-
-# Testing the model on a new image
-def denormalize(tensor):
-    mean = torch.tensor([0.485, 0.456, 0.406])
-    std = torch.tensor([0.229, 0.224, 0.225])
-    tensor = tensor * std[:, None, None] + mean[:, None, None]
-    return tensor
 
 def get_label_from_index(class_index, mappings_file='class_to_idx.json'):
     idx_to_class = load_class_mappings(mappings_file)
@@ -64,7 +55,6 @@ def load_class_mappings(file_path):
 
 
 def preprocess_image(image: Image.Image) -> torch.Tensor:
-    """Transform the PIL image to a tensor and prepare it for the model."""
     image_tensor = transform(image)
     image_tensor = image_tensor.unsqueeze(0)  # Add a batch dimension
     return image_tensor
